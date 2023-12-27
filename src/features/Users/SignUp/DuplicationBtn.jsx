@@ -1,6 +1,5 @@
-import React, {useRef} from 'react';
+import React from 'react';
 import axios from "../../../apis/utils/instance"
-import {useQuery, useQueryClient} from "react-query"
 
 function DuplicationBtn({targetValue, type}) {
     const duplicationCheck = async () => {
@@ -27,9 +26,7 @@ function DuplicationBtn({targetValue, type}) {
     }
 
     return (
-        <>
-            <button type={"button"} onClick={duplicationCheck}>중복확인</button>
-        </>
+        <button type={"button"} onClick={duplicationCheck}>중복확인</button>
     );
 }
 
