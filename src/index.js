@@ -6,6 +6,7 @@ import Home from "./pages/Home";
 import BidInfo from "./pages/BidInfo";
 import {Provider} from "jotai";
 import SignUp from "./pages/SignUp";
+import SignUpForm from "./features/Users/SignUp/SignUpForm";
 
 
 const router = createBrowserRouter([{
@@ -18,7 +19,7 @@ const router = createBrowserRouter([{
         },
         {
             path: "sign-up",
-            element: <SignUp/>
+            element: <SignUpForm/>
         },
         {
             path: "bid-info",
