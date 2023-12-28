@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {LogoImg, UserAuthDiv} from "./HeaderLayout";
-import LogInModal from "../Modal/LogInModal";
+import LogInModal from "../../Users/LogIn/LogInModal";
 import {useAtom} from "jotai";
 import {signUpPopupAtom} from "../../../store/flagState"
 import {Link} from "react-router-dom";
