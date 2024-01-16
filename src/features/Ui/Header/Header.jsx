@@ -5,6 +5,7 @@ import {signUpPopupAtom} from "../../../store/flagState"
 import {Link} from "react-router-dom";
 import LogInModal from "../../Users/LogIn/LogInModal";
 import {logInAtom} from "../../../store/userInfo";
+import LogOutBtn from "../../Users/LogOut/LogOutBtn";
 
 function Header(props) {
     const [isModalOpen, setIsModalOpen] = useAtom(signUpPopupAtom)
@@ -17,6 +18,7 @@ function Header(props) {
             {logInState.isLogIn ?
                 <UserAuthDiv>
                     <h3>{logInState.nickname}님 반갑습니다.</h3>
+                    <LogOutBtn/>
                 </UserAuthDiv>
                 :
                 <UserAuthDiv>
