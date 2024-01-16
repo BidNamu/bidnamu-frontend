@@ -2,6 +2,15 @@ import axios from "axios";
 import base64 from "base-64"
 
 const API_KEY = process.env.REACT_APP_API_KEY;
+
+export const authInstance = axios.create({
+    baseURL: API_KEY,
+    //timeout:1000,
+    headers: {
+        "Content-Type": "application/json",
+    }
+})
+
 export const instance = axios.create({
     baseURL: API_KEY,
     //timeout:1000,
