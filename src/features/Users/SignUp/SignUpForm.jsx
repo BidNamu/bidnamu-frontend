@@ -18,7 +18,6 @@ function SignUpForm(props) { //닉네임(중복확인), 이메일(중복확인),
             emailDuplicationOk: false
         }
     )
-    console.log(inputFormState)
     const checkPwRef = useRef(null)
     const formOnSubmit = async (e) => {
         e.preventDefault()
