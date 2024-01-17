@@ -13,7 +13,6 @@ function LogInModal({setIsModalOpen}) {
         email: "",
         password: ""
     })
-    console.log(inputFormState)
     const logInFormOnSubmit = async (e) => {
         e.preventDefault()
         const result = await authInstance.post("/auths/login", inputFormState)

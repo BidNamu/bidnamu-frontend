@@ -17,8 +17,11 @@ function Header(props) {
                          alt={"React"}/></Link>
             {logInState.isLogIn ?
                 <UserAuthDiv>
-                    <h3>{logInState.nickname}님 반갑습니다.</h3>
                     <LogOutBtn/>
+                    <Link to={"/create-action"}>
+                        <h3>경매 등록</h3>
+                    </Link>
+                    <h3>{logInState.nickname}님 반갑습니다.</h3>
                 </UserAuthDiv>
                 :
                 <UserAuthDiv>
