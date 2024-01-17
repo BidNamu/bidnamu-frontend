@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useRef, useState} from 'react';
 import {SignUpFormLayout} from "./SignUpFormLayout";
 import DuplicationBtn from "./DuplicationBtn";
 import axios from "../../../apis/utils/instance";
@@ -11,6 +11,12 @@ function SignUpForm(props) { //닉네임(중복확인), 이메일(중복확인),
         email: "",
         password: ""
     })
+    const [isDuplicationOk, setIsDuplicationOk] = useState(
+        {
+            nicknameDuplicationOk: false,
+            emailDuplicationOk: false
+        }
+    )
 
     const checkPwRef = useRef(null)
     const SignUpFormOnChg = (e) => {
@@ -18,14 +24,23 @@ function SignUpForm(props) { //닉네임(중복확인), 이메일(중복확인),
             ...prev, [e.target.name]: e.target.value
         }))
     }
-
     const formOnSubmit = async (e) => {
         e.preventDefault()
+        if (!isDuplicationOk.emailDuplicationOk) {
+            return alert("이메일 중복확인을 하세요")
+        }
+        if (!isDuplicationOk.nicknameDuplicationOk) {
+            return alert("닉네임 중복확인을 하세요")
+        }
         const result = await axios.post("/users", signUpFormState)
         try {
-            if (result.status === 200) {
+            console.log(result)
+            if (result.status === 201) {
                 alert("회원가입을 완료하였습니다.")
-                return navigate("./")
+                return navigate("/")
+            }
+            if (result.status === 409) {
+                return alert("중복된 정보가 있습니다")
             }
         } catch (err) {
             console.log("실패")
@@ -50,17 +65,20 @@ function SignUpForm(props) { //닉네임(중복확인), 이메일(중복확인),
                 <p>닉네임</p>
                 <input type={"text"} name={"nickname"} onChange={SignUpFormOnChg} required/>
                 <br/>
-                <DuplicationBtn targetValue={signUpFormState.nickname} type={"nickname"}/> {/*닉네임 중복확인*/}
+                <DuplicationBtn setIsDuplicationOk={setIsDuplicationOk} targetValue={signUpFormState.nickname}
+                                type={"nickname"}/> {/*닉네임 중복확인*/}
                 <br/>
                 <p>이메일</p>
                 <input type={"email"} name={"email"} onChange={SignUpFormOnChg} required/>
                 <br/>
-                <DuplicationBtn targetValue={signUpFormState.email} type={"email"}/> {/*이메일 중복확인*/}
+                <DuplicationBtn setIsDuplicationOk={setIsDuplicationOk} targetValue={signUpFormState.email}
+                                type={"email"}/> {/*이메일 중복확인*/}
                 <p>비밀번호</p>
-                <input type={"password"} name={"password"} onChange={SignUpFormOnChg} required/>
+                <input type={"password"} name={"password"} onChange={SignUpFormOnChg} required
+                       placeholder={"8자이상 소문자 대문자 특수문자 포함"}/>
                 <br/>
                 <p>비밀번호 확인</p>
-                <input type={"password"} onChange={checkPwOnChg} required/>
+                <input type={"password"} onChange={checkPwOnChg} placeholder={"8자이상 소문자 대문자 특수문자 포함"} required/>
                 <br/>
                 <small ref={checkPwRef}></small>
                 <br/>

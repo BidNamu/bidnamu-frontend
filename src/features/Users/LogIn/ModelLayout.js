@@ -1,6 +1,6 @@
 import styled from "styled-components";
 export const LogInLayout = styled.div`
-  span{
+  button{
     cursor: pointer;
   }
   position: absolute;
