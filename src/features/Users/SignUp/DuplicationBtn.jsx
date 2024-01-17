@@ -1,5 +1,5 @@
 import React from 'react';
-import axios from "../../../apis/utils/instance"
+import {authInstance} from "../../../apis/utils/instance"
 
 function DuplicationBtn({setIsDuplicationOk, targetValue, type}) {
     const isDuplication = (type) => {
@@ -19,7 +19,7 @@ function DuplicationBtn({setIsDuplicationOk, targetValue, type}) {
             endPoint = `users/email/duplicated/${targetValue}`
         }
         try {
-            const result = await axios.get(endPoint)
+            const result = await authInstance.get(endPoint)
             if (result.status === 200) {
                 isDuplication(type)
                 return alert(`사용가능한 ${type}입니다.`)
