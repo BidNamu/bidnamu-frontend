@@ -2,9 +2,10 @@ import React, {useState} from 'react';
 import {CreateAuctionFormLayout, FormLayout} from "./CreateAuctionFormLayout";
 import {useInput} from "../../../hooks/useInput";
 import {instance} from "../../../apis/utils/instance";
+import {useFile} from "../../../hooks/useFile";
 
 function CreateAuctionForm(props) {
-    const [imgList, setImgList] = useState([])
+    //const [imgList, setImgList] = useState([])
     const [handleInputChg, inputFormState] = useInput({
         title: "",
         description: "",
@@ -13,15 +14,9 @@ function CreateAuctionForm(props) {
         closingTime: "",
         fixedPrice: false
     })
-    const handleImgChg = (e) => {
-        setImgList([...imgList, ...e.target.files]);
-    };
+    const [handleImgChg, imgList] = useFile([])
     const createActionOnSubmit = async (e) => {
         e.preventDefault()
-        const formData = new FormData();
-        imgList.forEach(image => {
-            formData.append('files', image);
-        });
         const fetchAuctionObj = {
             images: imgList, body: inputFormState
         }
@@ -37,7 +32,7 @@ function CreateAuctionForm(props) {
             alert("서버 통신 실패")
         }
     }
-    console.log(inputFormState)
+
     return (
         <CreateAuctionFormLayout>
             <FormLayout onSubmit={createActionOnSubmit}>
