@@ -5,34 +5,38 @@ import {instance} from "../../../apis/utils/instance";
 
 function CreateAuctionForm(props) {
     const [imgList, setImgList] = useState([])
-    const [isFixedPrice, setIsFixedPrice] = useState(false)
     const [handleInputChg, inputFormState] = useInput({
         title: "",
         description: "",
         startingBid: 0,
         categoryId: 0,
         closingTime: "",
+        fixedPrice: false
     })
-    const createActionOnSubmit = async (e) => {
-        e.preventDefault()
-        const formData = new FormData();
-        // 폼에 데이터를 첨부하기 위해서는 form.append('키값(필드)', 데이터) 를 이용한다.
-        // 폼에 파일 첨부. 파일 첨부 같은 경우에는 반복문을 통해 append 해주어야 한다.
-        imgList.forEach(image => {
-            formData.append('files', image);
-        });
-        inputFormState.fixedPrice = isFixedPrice
-        await instance.post('/auctions', {
-            images: imgList, body: inputFormState
-        }, {
-            headers: {'Content-Type': 'multipart/form-data', charset: 'utf-8'},
-        });
-
-    }
     const handleImgChg = (e) => {
         setImgList([...imgList, ...e.target.files]);
     };
-
+    const createActionOnSubmit = async (e) => {
+        e.preventDefault()
+        const formData = new FormData();
+        imgList.forEach(image => {
+            formData.append('files', image);
+        });
+        const fetchAuctionObj = {
+            images: imgList, body: inputFormState
+        }
+        console.log(fetchAuctionObj)
+        const result = await instance.post('/auctions', fetchAuctionObj);
+        try {
+            console.log(result)
+            if (result.status === 200) {
+                alert("회원가입을 완료하였습니다.")
+            }
+        } catch (err) {
+            console.log("실패")
+            alert("서버 통신 실패")
+        }
+    }
     console.log(inputFormState)
     return (
         <CreateAuctionFormLayout>
@@ -49,7 +53,7 @@ function CreateAuctionForm(props) {
                 <p>시작가격</p>
                 <input type={"number"} onChange={handleInputChg} name={"startingBid"}/>원
                 <br/>
-                즉결여부<input type={"checkbox"} onChange={(e) => setIsFixedPrice(e.target.checked)} name={"fixedPrice"}/>
+                즉결여부<input type={"checkbox"} onChange={handleInputChg} name={"fixedPrice"}/>
                 <p>상품사진</p><input type={"file"} multiple onChange={handleImgChg} name={"images"}/>
                 <br/>
                 <p>경매기간</p>
