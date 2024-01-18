@@ -1,8 +1,8 @@
 import React, {useState} from 'react';
 import {CreateAuctionFormLayout, FormLayout} from "./CreateAuctionFormLayout";
 import {useInput} from "../../../hooks/useInput";
-import {instance} from "../../../apis/utils/instance";
 import {useFile} from "../../../hooks/useFile";
+import {usePostWithFiles} from "../../../hooks/useFetch";
 
 function CreateAuctionForm(props) {
     //const [imgList, setImgList] = useState([])
@@ -15,27 +15,10 @@ function CreateAuctionForm(props) {
         fixedPrice: false
     })
     const [handleImgChg, imgList] = useFile([])
-    const createActionOnSubmit = async (e) => {
-        e.preventDefault()
-        const fetchAuctionObj = {
-            images: imgList, body: inputFormState
-        }
-        console.log(fetchAuctionObj)
-        const result = await instance.post('/auctions', fetchAuctionObj);
-        try {
-            console.log(result)
-            if (result.status === 200) {
-                alert("회원가입을 완료하였습니다.")
-            }
-        } catch (err) {
-            console.log("실패")
-            alert("서버 통신 실패")
-        }
-    }
-
+    const [submitForFetch] = usePostWithFiles(inputFormState, imgList, "/auctions")
     return (
         <CreateAuctionFormLayout>
-            <FormLayout onSubmit={createActionOnSubmit}>
+            <FormLayout onSubmit={submitForFetch}>
                 <p>상품명</p>
                 <input type={"text"} name={"title"} onChange={handleInputChg}/>
                 <br/>
