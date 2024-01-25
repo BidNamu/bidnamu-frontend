@@ -2,7 +2,7 @@ import React from 'react';
 import {SignUpFormLayout} from "./SignUpFormLayout";
 import {useNavigate} from "react-router-dom";
 import {useInput} from "../../../hooks/useInput";
-import {usePost} from "../../../hooks/useFetch";
+import {useGetAvailability, usePost} from "../../../hooks/useFetch";
 import {useForm} from "react-hook-form";
 import {DevTool} from "@hookform/devtools";
 import {authInstance} from "../../../apis/utils/instance";
@@ -15,7 +15,7 @@ const REGEX = {
 
 function SignUpForm(props) { //닉네임(중복확인), 이메일(중복확인), 비밀번호
     const {
-        control, register, trigger,
+        control, register,
         getValues,
         formState: {errors}, handleSubmit
     } = useForm({
@@ -32,6 +32,8 @@ function SignUpForm(props) { //닉네임(중복확인), 이메일(중복확인),
         password: getValues().password
     }, "/users")
 
+    const getAvailability = useGetAvailability()
+
     const nicknameRegister = register(
         "nickname", {
             required: "닉네임을 입력해주세요.",
@@ -40,8 +42,7 @@ function SignUpForm(props) { //닉네임(중복확인), 이메일(중복확인),
             maxLength: {value: 15, message: "15자 이하 입력해주세요."},
             validate: {
                 nicknameCheck: async (fieldValue) => {
-                    const result = await authInstance.get(`users/nickname/duplicated/${fieldValue}`)
-                    return result.status === 200 && console.log(result);
+                    return await getAvailability(fieldValue, "nickname") || "닉네임이 이미 존재합니다"
                 }
             }
         }
@@ -54,9 +55,7 @@ function SignUpForm(props) { //닉네임(중복확인), 이메일(중복확인),
             maxLength: {value: 320, message: "320자 이하 입력해주세요."},
             validate: {
                 emailCheck: async (fieldValue) => {
-                    const result = await authInstance.get(`users/email/duplicated/${fieldValue}`)
-                    console.log(result.status)
-                    return result.status === 200 && console.log(result);
+                    return await getAvailability(fieldValue, "email") || "이메일이 이미 존재합니다"
                 }
             }
         })
@@ -75,13 +74,10 @@ function SignUpForm(props) { //닉네임(중복확인), 이메일(중복확인),
             maxLength: {value: 20, message: "20자 이하 입력해주세요."},
         }
     )
-    const err = (e) => {
-        console.log(e)
-        console.log(errors)
-    }
+
     return (
         <SignUpFormLayout>
-            <form onSubmit={handleSubmit(submitForPost, err)}>
+            <form onSubmit={handleSubmit(submitForPost)}>
                 <h2>회원가입</h2>
                 <p>닉네임</p>
                 <input
@@ -89,15 +85,10 @@ function SignUpForm(props) { //닉네임(중복확인), 이메일(중복확인),
                 />
                 <p> {errors.nickname?.message}</p>
                 <br/>
-                <button type={"button"} name={"nickname"} onClick={() => trigger("nickname")}>
-                    중복확인
-                </button>
-                <br/>
                 <p>이메일</p>
                 <input {...emailRegister} type={"email"}/>
                 <p> {errors.email?.message}</p>
                 <br/>
-                <button type={"button"} name={"email"} onClick={() => trigger("email")}>중복확인</button>
                 <p>비밀번호</p>
                 <input {...passwordRegister}
                        type={"password"} name={"password"}
