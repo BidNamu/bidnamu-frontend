@@ -1,4 +1,4 @@
-import {authInstance, instance, multipartInstance} from "../apis/utils/instance";
+import {authInstance, multipartInstance} from "../apis/utils/instance";
 
 
 function usePostWithFiles(inputFormState, imgList, url) {
@@ -47,6 +47,24 @@ function usePost(inputFormState, url) {
     return [submitForPost]
 }
 
+function useGetAvailability(inputState) {
+    return async (fieldValue, endpoint) => {
+        const url = `users/${endpoint}/duplicated/${fieldValue}`
+        try {
+            //`users/nickname/duplicated/${fieldValue}`
+            const result = await authInstance.get(url);
+            //회원가입:authInstance
+            if (result.status === 200) {
+                console.log(result)
+                return Promise.resolve(true)
+            }
+        } catch (err) {
+            console.log(err)
+            alert("서버 통신 실패")
+        }
+    }
+}
 
-export {usePostWithFiles, usePost}
+
+export {usePostWithFiles, usePost, useGetAvailability}
 
