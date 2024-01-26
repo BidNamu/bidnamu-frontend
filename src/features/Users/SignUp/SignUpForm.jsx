@@ -1,17 +1,10 @@
 import React from 'react';
 import {SignUpFormLayout} from "./SignUpFormLayout";
-import {useNavigate} from "react-router-dom";
-import {useInput} from "../../../hooks/useInput";
 import {useGetAvailability, usePost} from "../../../hooks/useFetch";
 import {useForm} from "react-hook-form";
 import {DevTool} from "@hookform/devtools";
-import {authInstance} from "../../../apis/utils/instance";
-
-const REGEX = {
-    nickname: /^[^\s]*$/,
-    email: /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/,
-    password: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[#$^+=!*()@%&]).*$/
-}
+import {REGEX} from "../../../lib/regex";
+import {valid} from "../../../lib/valid";
 
 function SignUpForm(props) { //닉네임(중복확인), 이메일(중복확인), 비밀번호
     const {
@@ -23,17 +16,22 @@ function SignUpForm(props) { //닉네임(중복확인), 이메일(중복확인),
             nickname: "",
             email: "",
             password: ""
-        }
+        },
         //mode 의 디폴트는 onSubmit
     })
-    const [submitForPost] = usePost({
+
+    const submitForPost = usePost({
         nickname: getValues().nickname,
         email: getValues().email,
         password: getValues().password
     }, "/users")
 
     const getAvailability = useGetAvailability()
-
+   /* const qwe = valid(register,
+        "닉네임을 입력해주세요.",
+        "공백은 허용하지 않습니다.",
+        {minLengthValue: 5, minlengthMsg: "5자 이상 입력해주세요."},
+        {maxLengthValue: 15, maxLengthMsg: "15자 이하 입력해주세요"}, getAvailability)*/
     const nicknameRegister = register(
         "nickname", {
             required: "닉네임을 입력해주세요.",
@@ -47,6 +45,7 @@ function SignUpForm(props) { //닉네임(중복확인), 이메일(중복확인),
             }
         }
     )
+
     const emailRegister = register(
         "email", {
             required: "이메일을 입력해주세요.",
@@ -58,7 +57,9 @@ function SignUpForm(props) { //닉네임(중복확인), 이메일(중복확인),
                     return await getAvailability(fieldValue, "email") || "이메일이 이미 존재합니다"
                 }
             }
-        })
+        }
+    )
+
     const passwordRegister = register(
         "password", {
             required: "비밀번호를 입력해주세요.",
@@ -68,21 +69,19 @@ function SignUpForm(props) { //닉네임(중복확인), 이메일(중복확인),
         })
     const passwordCheckRegister = register(
         "passwordCheck", {
-            required: "비밀번호를 재입력해주세요.",
-            pattern: {value: REGEX.password, message: "8자이상 소문자 대문자 특수문자 포함 해야합니다."},
-            minLength: {value: 8, message: "8자 이상 입력해주세요."},
-            maxLength: {value: 20, message: "20자 이하 입력해주세요."},
-        }
-    )
+            validate: {
+                passwordCheck: (fieldValue) => {
+                    return fieldValue === getValues().password || "비밀번호가 일치하지 않습니다.";
+                }
+            }
+        })
 
     return (
         <SignUpFormLayout>
             <form onSubmit={handleSubmit(submitForPost)}>
                 <h2>회원가입</h2>
                 <p>닉네임</p>
-                <input
-                    {...nicknameRegister} type={"text"}
-                />
+                <input{...nicknameRegister} type={"text"}/>
                 <p> {errors.nickname?.message}</p>
                 <br/>
                 <p>이메일</p>
