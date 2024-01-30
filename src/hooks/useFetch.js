@@ -28,12 +28,12 @@ function usePostWithFiles(inputFormState, imgList, url) {
     return [submitWithFiles]
 }
 
-function usePost() {
+function usePost(url) {
     const navigate = useNavigate()
-    const submitForPost = async (inputFormState, url) => {
+    return async (inputFormState) => {
         console.log(inputFormState)
         try {
-            const result = await authInstance.post(url, inputFormState);
+            const result = await authInstance.post(url,inputFormState);
             //회원가입:authInstance
             console.log(result)
             if (result.status === 201) {
@@ -45,8 +45,6 @@ function usePost() {
             alert("서버 통신 실패")
         }
     }
-
-    return submitForPost
 }
 
 
