@@ -21,15 +21,19 @@ function SignUpForm(props) { //닉네임(중복확인), 이메일(중복확인),
         resolver: yupResolver(signUpValid),
     })
 
-    const submitForPost = usePost({
-        nickname: getValues().nickname,
-        email: getValues().email,
-        password: getValues().password
-    }, "/users")
+    const submitForPost = usePost("/users")
+
 
     return (
         <SignUpFormLayout>
-            <form onSubmit={handleSubmit(submitForPost)}>
+            <form onSubmit={handleSubmit(() =>
+                submitForPost(
+                    {
+                        nickname: getValues().nickname,
+                        email: getValues().email,
+                        password: getValues().password
+                    }
+                ))}>
                 <h2>회원가입</h2>
                 <p>닉네임</p>
                 <input type={"text"}
