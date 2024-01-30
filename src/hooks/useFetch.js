@@ -1,4 +1,5 @@
 import {authInstance, multipartInstance} from "../apis/utils/instance";
+import {useNavigate} from "react-router-dom";
 
 
 function usePostWithFiles(inputFormState, imgList, url) {
@@ -27,16 +28,17 @@ function usePostWithFiles(inputFormState, imgList, url) {
     return [submitWithFiles]
 }
 
-function usePost(inputFormState, url) {
-
-    const submitForPost = async () => {
+function usePost() {
+    const navigate = useNavigate()
+    const submitForPost = async (inputFormState, url) => {
         console.log(inputFormState)
         try {
             const result = await authInstance.post(url, inputFormState);
             //회원가입:authInstance
             console.log(result)
-            if (result.status === 200) {
+            if (result.status === 201) {
                 alert("회원가입을 완료하였습니다.")
+                navigate("/")
             }
         } catch (err) {
             console.log(err)
@@ -44,27 +46,10 @@ function usePost(inputFormState, url) {
         }
     }
 
-    return [submitForPost]
-}
-
-function useGetAvailability(inputState) {
-    return async (fieldValue, endpoint) => {
-        const url = `users/${endpoint}/duplicated/${fieldValue}`
-        try {
-            //`users/nickname/duplicated/${fieldValue}`
-            const result = await authInstance.get(url);
-            //회원가입:authInstance
-            if (result.status === 200) {
-                console.log(result)
-                return Promise.resolve(true)
-            }
-        } catch (err) {
-            console.log(err)
-            alert("서버 통신 실패")
-        }
-    }
+    return submitForPost
 }
 
 
-export {usePostWithFiles, usePost, useGetAvailability}
+
+export {usePostWithFiles, usePost}
 
