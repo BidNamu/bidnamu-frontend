@@ -1,11 +1,11 @@
-import {multipartInstance} from "../apis/utils/instance";
+import {authInstance, multipartInstance} from "../apis/utils/instance";
+import {useNavigate} from "react-router-dom";
 
 
 function usePostWithFiles(inputFormState, imgList, url) {
-    const submitForFetch = async (e) => {
+    const submitWithFiles = async (e) => {
         e.preventDefault()
         const formData = new FormData()
-
         imgList.forEach(img => {
             formData.append('images', img)
         })
@@ -25,8 +25,29 @@ function usePostWithFiles(inputFormState, imgList, url) {
         }
     }
 
-    return [submitForFetch]
+    return [submitWithFiles]
 }
 
-export {usePostWithFiles}
+function usePost(url) {
+    const navigate = useNavigate()
+    return async (inputFormState) => {
+        console.log(inputFormState)
+        try {
+            const result = await authInstance.post(url,inputFormState);
+            //회원가입:authInstance
+            console.log(result)
+            if (result.status === 201) {
+                alert("회원가입을 완료하였습니다.")
+                navigate("/")
+            }
+        } catch (err) {
+            console.log(err)
+            alert("서버 통신 실패")
+        }
+    }
+}
+
+
+
+export {usePostWithFiles, usePost}
 

@@ -1,7 +1,6 @@
 import React, {useState} from 'react';
 import {CreateAuctionFormLayout, FormLayout} from "./CreateAuctionFormLayout";
 import {useInput} from "../../../hooks/useInput";
-import {useFile} from "../../../hooks/useFile";
 import {usePostWithFiles} from "../../../hooks/useFetch";
 
 function CreateAuctionForm(props) {
@@ -14,11 +13,11 @@ function CreateAuctionForm(props) {
         closingTime: "",
         fixedPrice: false
     })
-    const [handleImgChg, imgList] = useFile([])
-    const [submitForFetch] = usePostWithFiles(inputFormState, imgList, "/auctions")
+    const [handleImgChg, imgList] = useInput([])
+    const [submitWithFiles] = usePostWithFiles(inputFormState, imgList, "/auctions")
     return (
         <CreateAuctionFormLayout>
-            <FormLayout onSubmit={submitForFetch}>
+            <FormLayout onSubmit={submitWithFiles}>
                 <p>상품명</p>
                 <input type={"text"} name={"title"} onChange={handleInputChg}/>
                 <br/>

@@ -3,10 +3,9 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 import {createBrowserRouter, RouterProvider} from "react-router-dom";
 import Home from "./pages/Home";
-import BidInfo from "./pages/BidInfo";
 import {Provider} from "jotai";
 import SignUp from "./pages/SignUp";
-import SignUpForm from "./features/Users/SignUp/SignUpForm";
+import CreateAuction from "./pages/CreateAuction";
 
 
 const router = createBrowserRouter([{
@@ -19,11 +18,11 @@ const router = createBrowserRouter([{
         },
         {
             path: "sign-up",
-            element: <SignUpForm/>
+            element: <SignUp/>
         },
         {
-            path: "bid-info",
-            element: <BidInfo/>
+            path: "create-action",
+            element: <CreateAuction/>
         },
     ]
 }])
