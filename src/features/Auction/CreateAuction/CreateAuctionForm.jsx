@@ -1,38 +1,32 @@
 import React, {useReducer} from 'react';
 import {CreateAuctionFormLayout, FormLayout} from "./CreateAuctionFormLayout";
-import {useInput} from "../../../hooks/useInput";
 import {useGet, usePostWithFiles} from "../../../hooks/useFetch";
 import {useForm} from "react-hook-form";
 import {yupResolver} from "@hookform/resolvers/yup";
 import {createAuctionValid} from "../../../lib/validList";
-import * as yup from "yup";
-import {categoryReducer} from "../../../lib/categoryProcess";
+import {categoryReducer} from "../../../lib/reducerList";
+
 function CreateAuctionForm(props) {
     const {
-        control, register, getValues, formState: {errors}, handleSubmit
+        setValue, register, formState: {errors}, handleSubmit
     } = useForm({
         defaultValues: {
             title: "",
+            images: null,
             description: "",
             categoryId: 0,
-            startingBid: 0,
-            fixedPrice: 0,
+            startingBid: 1,
+            fixedPrice: false,
             closingTime: "",
         }, resolver: yupResolver(createAuctionValid),
     })
-    //const [imgList, setImgList] = useState([])
-    const [handleInputChg, inputFormState] = useInput({
-        title: "", description: "", startingBid: 0, categoryId: 0, closingTime: "", fixedPrice: false
-    })
-    const [handleImgChg, imgList] = useInput([])
-    const on = (v) => {
-        console.log(v)
-    }
     const categoryData = useGet("/categories")
-    const [submitWithFiles] = usePostWithFiles(inputFormState, imgList, "/auctions")
-    const [categoryState, dispatch] = useReducer(categoryReducer, {dep1: undefined, dep2: undefined, chosen: undefined})
+    const submitWithFiles = usePostWithFiles("/auctions")
+    const [categoryState, dispatch] = useReducer(categoryReducer, {dep1: undefined, dep2: undefined})
     return (<CreateAuctionFormLayout>
-        <FormLayout onSubmit={handleSubmit(on)}>
+        <FormLayout onSubmit={handleSubmit((data) => {
+            submitWithFiles(data)
+        })}>
             <p>상품명</p>
             <input type={"text"} {...register("title")}/>
             <p> {errors.title?.message}</p>
@@ -45,10 +39,11 @@ function CreateAuctionForm(props) {
                 <div>
                     <p>카테고리</p>
                     <ul>
-                        {categoryData.map(
+                        {categoryData?.map(
                             (ele) => {
                                 return <li key={ele.id}>
-                                    <button onClick={() => dispatch({type: "dep1", data: ele})}>{ele.name}</button>
+                                    <button type={"button"}
+                                            onClick={() => dispatch({type: "dep1", data: ele})}>{ele.name}</button>
                                 </li>
                             }
                         )}
@@ -57,7 +52,8 @@ function CreateAuctionForm(props) {
                         {categoryState?.dep1?.map(
                             (ele) => {
                                 return <li key={ele.id}>
-                                    <button onClick={() => dispatch({type: "dep2", data: ele})}>{ele.name}</button>
+                                    <button type={"button"}
+                                            onClick={() => dispatch({type: "dep2", data: ele})}>{ele.name}</button>
                                 </li>
                             }
                         )}
@@ -66,14 +62,17 @@ function CreateAuctionForm(props) {
                         {categoryState?.dep2?.map(
                             (ele) => {
                                 return <li key={ele.id}>
-                                    <button onClick={() => dispatch({type: "chosen", data: ele})}>{ele.name}</button>
+                                    <button type={"button"} {...register("categoryId")} onClick={() => {
+                                        setValue("categoryId", ele.id)
+                                    }} value={ele.id}>
+                                        {ele.name}
+                                    </button>
                                 </li>
                             }
                         )}
                     </ul>
                 </div>
             </div>
-            {/*   <input type={"text"} {...register("categoryId")}/>*/}
             <p> {errors.categoryId?.message}</p>
             <br/>
             <p>시작가격</p>
@@ -85,6 +84,7 @@ function CreateAuctionForm(props) {
             <p> {errors.fixedPrice?.message}</p>
             <p>상품사진</p>
             <input type={"file"} multiple {...register("images")}/>
+            <p> {errors.images?.message}</p>
             <br/>
             <p>경매기간</p>
             <input type={"datetime-local"} {...register("closingTime")}/>
