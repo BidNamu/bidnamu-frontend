@@ -1,48 +1,38 @@
 import React from 'react';
 import {LogInLayout} from "./ModelLayout";
-import {useInput} from "../../../hooks/useInput";
-import {authInstance} from "../../../apis/utils/instance";
-import {useNavigate} from "react-router-dom";
-import {useAtom} from "jotai";
-import {isLogInSuccessAtom} from "../../../store/flagState";
+import {useForm} from "react-hook-form";
+import {yupResolver} from "@hookform/resolvers/yup";
+import {logInValid} from "../../../lib/validList";
+import {usePost} from "../../../hooks/useFetch";
+
 
 function LogInModal({setIsModalOpen}) {
-    const navigate = useNavigate()
-    const [isLogInSuccess,setIsLogInSuccess] = useAtom(isLogInSuccessAtom)
-    const [handleInputChg, inputFormState] = useInput({
-        email: "",
-        password: ""
+    const {
+        register,
+        formState: {errors}, handleSubmit
+    } = useForm({
+        defaultValues: {
+            email: "",
+            password: ""
+        },
+        resolver: yupResolver(logInValid),
     })
-    const logInFormOnSubmit = async (e) => {
-        e.preventDefault()
-        const result = await authInstance.post("/auths/login", inputFormState)
-        try {
-            console.log(result)
-            if (result.status === 200) {
-                console.log(result.data)
-                localStorage.setItem("accessToken", result.data.accessToken)
-                localStorage.setItem("refreshToken", result.data.refreshToken)
-                setIsLogInSuccess(!isLogInSuccess)
-                alert("로그인을 완료하였습니다.")
-                navigate("/")
-            }
-        } catch (err) {
-            console.log("실패")
-            alert("서버 통신 실패")
-        }
-    }
 
+    const submitForPost = usePost("/auths/login")
     return (
         <LogInLayout>
-            <form onSubmit={logInFormOnSubmit}>
-                <span onClick={() => {
+            <form onSubmit={handleSubmit(submitForPost)}>
+                <button onClick={() => {
                     setIsModalOpen(false)
-                }}>취소</span>
+                }}>취소
+                </button>
                 <p>이메일</p>
-                <input type={"text"} name={"email"} onChange={handleInputChg}/>
+                <input type={"email"} {...register("email")}/>
+                <p> {errors.email?.message}</p>
                 <br/>
                 <p>비밀번호</p>
-                <input type={"password"} name={"password"} onChange={handleInputChg}/>
+                <input type={"password"} {...register("password")}/>
+                <p> {errors.password?.message}</p>
                 <br/>
                 <button type={"submit"}>로그인</button>
             </form>
