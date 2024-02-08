@@ -19,6 +19,7 @@ export const instance = axios.create({
         Authorization: `Bearer ${localStorage.getItem("accessToken")}`
     }
 })
+
 export const multipartInstance = axios.create({
     baseURL: API_KEY,
     //timeout:1000,
@@ -57,7 +58,6 @@ setupInterceptor(multipartInstance);
 const expValidation = (token) => {
     const currentTimestamp = Math.floor(Date.now() / 1000);
     const {exp} = JSON.parse(base64.decode(token.substring(token.indexOf('.') + 1, token.lastIndexOf('.'))));
-    console.log(exp >= currentTimestamp)
     return exp >= currentTimestamp;
 }
 
